@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: Offline Content
+Plugin Name: Offline
 Description: Allow your users to read your content even while offline.
 Plugin URI: https://github.com/delapuente/wp-offline-content
 Version: 0.5.0
@@ -14,9 +14,12 @@ load_plugin_textdomain('offline-content', false, dirname(plugin_basename(__FILE_
 
 include_once(plugin_dir_path(__FILE__) . 'class-wp-offline-content-plugin.php');
 
+include_once(plugin_dir_path(__FILE__) . 'wp-offline-shell.php');
+
 if (is_admin()) {
     include_once(plugin_dir_path(__FILE__) . 'class-wp-offline-content-admin.php');
     WP_Offline_Content_Admin::init();
 }
 WP_Offline_Content_Plugin::init();
+
 ?>
