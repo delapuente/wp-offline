@@ -80,12 +80,16 @@ class WP_Offline_Content_Admin {
     public function admin_menu() {
         add_options_page(
             __('Offline Content Options', 'offline-content'), __('Offline Content', 'offline-content'),
-            'manage_options', self::$options_page_id, array($this, 'create_admin_page')
+            'manage_options', self::$options_page_id, array($this, 'create_content_admin_page')
         );
     }
 
-    public function create_admin_page() {
+    public function create_content_admin_page() {
         include_once(plugin_dir_path(__FILE__) . 'lib/pages/admin.php');
+    }
+
+    public function create_shell_admin_page() {
+        include_once(plugin_dir_path(__FILE__) . 'wp-offline-shell-admin.php');
     }
 
     public function network_timeout_input() {

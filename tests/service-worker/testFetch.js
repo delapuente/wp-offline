@@ -9,7 +9,7 @@ describe('onFetch()', function() {
       request: {},
       respondWith: sinon.stub()
     };
-    importScripts('/base/wp-offline-content/lib/js/sw.js');
+    importScripts('/base/wp-offline-content/lib/js/content-sw.js');
     wpOfflineContent.get = sinon.stub().returns(fakeResponse);
   });
 

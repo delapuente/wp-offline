@@ -21,7 +21,7 @@ describe('update()', function() {
   };
 
   beforeEach(function() {
-    importScripts('/base/wp-offline-content/lib/js/sw.js');
+    importScripts('/base/wp-offline-content/lib/js/content-sw.js');
   });
 
   afterEach(function() {

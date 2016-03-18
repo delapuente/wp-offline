@@ -40,7 +40,7 @@ class WP_Offline_Content_Plugin {
 
     public function render_sw() {
         $sw_scope = $this->sw_scope;
-        $this->render(plugin_dir_path(__FILE__) . 'lib/js/sw.js', array(
+        $this->render(plugin_dir_path(__FILE__) . 'lib/js/content-sw.js', array(
             '$debug' => boolval($this->options->get('offline_debug_sw')),
             '$networkTimeout' => intval($this->options->get('offline_network_timeout')),
             '$resources' => $this->get_precache_list(),
