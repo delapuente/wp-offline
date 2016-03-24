@@ -83,10 +83,6 @@ class Offline_Shell_Admin {
     }
   }
 
-  public function on_admin_menu($smp) {
-    add_action('admin_head-'.$smp, array($this, 'process_options'));
-  }
-
   public function on_switch_theme() {
     if(get_option('offline_shell_enabled')) {
       update_option('offline_shell_enabled', Offline_Shell_DB::$options['offline_shell_enabled']);

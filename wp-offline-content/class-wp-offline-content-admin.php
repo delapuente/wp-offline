@@ -105,7 +105,7 @@ class WP_Offline_Content_Admin {
     }
 
     public function create_shell_admin_page() {
-        Offline_Shell_Admin::on_admin_menu($this->smo);
+        Offline_Shell_Admin::process_options();
         Offline_Shell_Admin::options();
     }
 
