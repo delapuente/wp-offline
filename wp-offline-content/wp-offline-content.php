@@ -37,6 +37,5 @@ if (is_admin()) {
 
 register_activation_hook(__FILE__, array('Offline_Shell_DB', 'on_activate'));
 register_deactivation_hook(__FILE__, array('Offline_Shell_DB', 'on_deactivate'));
-register_uninstall_hook(__FILE__, array('Offline_Shell_DB', 'on_uninstall'));
 
 ?>

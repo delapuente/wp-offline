@@ -8,7 +8,7 @@ class Offline_Shell_DB {
     // For v1 we'll prompt the user enable the plugin manually upon activation
     'offline_shell_enabled' => 0,
     // The "style.css" file is a standard WordPress file, so we can safely assume this exists
-    'offline_shell_files' => array('styles.css'),
+    'offline_shell_files' => array('style.css'),
     // Create an initial SW version
     'offline_shell_version' => self::VERSION,
     // Setting debug initially will help the user understand what the SW is doing via the console
