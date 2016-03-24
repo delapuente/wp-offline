@@ -75,7 +75,7 @@ class Offline_Shell_Admin {
     }
 
     if(get_option('offline_shell_enabled') && !count(get_option('offline_shell_files'))) {
-      echo '<div class="update-nag"><p>', sprintf(__('Offline Shell is enabled but no files have been selected for caching.  To take full advantage of this plugin, <a href="%s">please select files to cache</a>.', 'offline-shell'), admin_url('options-general.php?page=offline-shell-options')),'</p></div>';
+      echo '<div class="update-nag"><p>', sprintf(__('Offline Shell is enabled but no files have been selected for caching.  To take full advantage of this plugin, <a href="%s">please select files to cache</a>.', 'offline-shell'), admin_url('admin.php?page=offline-content-shell')),'</p></div>';
     }
 
     if(get_option('offline_shell_enabled') && ($_SERVER['REQUEST_SCHEME'] != 'https' && strrpos(strtolower($_SERVER['HTTP_HOST']), 'localhost', -strlen($_SERVER['HTTP_HOST']) === false))) {
@@ -92,7 +92,7 @@ class Offline_Shell_Admin {
   }
 
   function show_switch_theme_message() {
-    echo '<div class="update-nag"><p>',  sprintf(__('You\'ve changed themes; please update your <a href="%s">WP ServiceWorker Cache options</a>.', 'offline-shell'), admin_url('options-general.php?page=offline-shell-options')), '</p></div>';
+    echo '<div class="update-nag"><p>',  sprintf(__('You\'ve changed themes; please update your <a href="%s">WP ServiceWorker Cache options</a>.', 'offline-shell'), admin_url('admin.php?page=offline-content-shell')), '</p></div>';
   }
 
   function determine_file_recommendation($file_info, $all_files) {
