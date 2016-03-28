@@ -6,10 +6,8 @@ require_once(plugin_dir_path(__FILE__).'wp-offline-shell-recommender.php');
 
 class Offline_Shell_Admin {
   private static $instance;
-  private $submitted = false;
 
   public function __construct() {
-    //add_action('admin_menu', array($this, 'on_admin_menu'));
     add_action('admin_notices', array($this, 'on_admin_notices'));
     add_action('after_switch_theme', array($this, 'on_switch_theme'));
     add_action('wp_ajax_offline_shell_files', array($this, 'get_files_ajax'));
@@ -30,13 +28,11 @@ class Offline_Shell_Admin {
     exit();
   }
 
-  public function process_options() {
+  public static function process_options() {
 
     if(!isset($_POST['offline_shell_form_submitted'])) {
       return false;
     }
-
-    $this->submitted = true;
 
     // Check nonce to avoid hacks
     check_admin_referer('offline-shell-admin');
@@ -159,7 +155,7 @@ class Offline_Shell_Admin {
 
 <div class="wrap">
 
-  <?php if($this->submitted) { ?>
+  <?php if(isset($_POST['offline_shell_form_submitted'])) { ?>
     <div class="updated">
       <p><?php _e('Your settings have been saved.', 'offline-shell'); ?></p>
     </div>
