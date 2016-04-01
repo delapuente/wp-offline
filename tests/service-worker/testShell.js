@@ -5,7 +5,7 @@ describe('tests', function() {
   var fakeEvent;
 
   beforeEach(function(done) {
-    // Needed to prevent SW from bombing on what needs to be replaced
+    // Set globals to replace the '$' vars in the serviceworker file
     self.$urls = {
       'http://localhost:9876/socket.io/socket.io.js': '1111',
       'http://localhost:9876/karma.js': '2222'
@@ -21,7 +21,7 @@ describe('tests', function() {
 
     // Clean up cache and storage before each test
     wpOfflineShell.storage.clear().then(function() {
-      self.caches.delete(wpOfflineShell.cacheName).then(function(){
+      self.caches.delete(wpOfflineShell.cacheName).then(function() {
         done();
       });
     });

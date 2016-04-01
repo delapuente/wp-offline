@@ -51,6 +51,9 @@ More options will be available with new versions of the plugin.
 
 == Change Log ==
 
+= 0.6.0 =
+Add the capability to cache core theme assets for offline use.
+
 = 0.5.0 =
 Prevent undesired updates when used with other service worker supported plugins for WordPress.
 
