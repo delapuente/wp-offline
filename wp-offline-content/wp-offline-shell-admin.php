@@ -149,7 +149,7 @@ class Offline_Shell_Admin {
     return array('verdict' => false, 'message' => '');
   }
 
-  function options() {
+  public static function options() {
 
 ?>
 

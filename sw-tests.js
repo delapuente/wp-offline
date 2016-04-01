@@ -5,7 +5,8 @@ var SW_TESTS = [
   '/base/tests/service-worker/testGet.js',
   '/base/tests/service-worker/testFetch.js',
   '/base/tests/service-worker/testDeleteOutdatedCaches.js',
-  '/base/tests/service-worker/testUpdateCache.js'
+  '/base/tests/service-worker/testUpdateCache.js',
+  '/base/tests/service-worker/testShell.js'
 ];
 
 // Import chai and sinon into the ServiceWorkerGlobalScope

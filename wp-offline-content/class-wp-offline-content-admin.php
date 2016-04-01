@@ -17,8 +17,6 @@ class WP_Offline_Content_Admin {
         return self::$instance;
     }
 
-    public $smo;
-
     private $options;
 
     private function __construct() {
@@ -82,17 +80,17 @@ class WP_Offline_Content_Admin {
     public function admin_menu() {
 
       add_menu_page(
-        'Offline',
-        'Offline',
+        __('Offline', 'offline-content'),
+        __('Offline', 'offline-content'),
         'manage_options',
         'offline-content',
         array($this, 'create_content_admin_page')
       );
 
-      $this->smo = add_submenu_page(
+      add_submenu_page(
         'offline-content',
-        'Design',
-        'Design',
+        __('Design', 'offline-content'),
+        __('Design', 'offline-content'),
         'manage_options',
         'offline-content-shell',
         array($this, 'create_shell_admin_page')

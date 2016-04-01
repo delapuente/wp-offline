@@ -1,9 +1,9 @@
 <?php
 /*
-Plugin Name: Offline
+Plugin Name: Offline Content
 Description: Allow your users to read your content even while offline.
 Plugin URI: https://github.com/delapuente/wp-offline-content
-Version: 0.5.0
+Version: 0.6.0
 Author: Mozilla
 Author URI: https://www.mozilla.org/
 License: GPLv2 or later
