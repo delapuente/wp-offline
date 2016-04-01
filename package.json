@@ -1,6 +1,6 @@
 {
   "name": "wp-offline-content",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "A WordPress plugin for offlining content",
   "main": "index.js",
   "directories": {
@@ -23,7 +23,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/delapuente/wp-offline-content.git"
+    "url": "git+https://github.com/mozilla/wp-offline-content.git"
   },
   "keywords": [
     "wordpress",
@@ -34,7 +34,13 @@
   "author": "Salvador de la Puente González",
   "license": "GPL-2.0",
   "bugs": {
-    "url": "https://github.com/delapuente/wp-offline-content/issues"
+    "url": "https://github.com/mozilla/wp-offline-content/issues"
   },
-  "homepage": "https://github.com/delapuente/wp-offline-content#readme"
+  "contributors": [
+    {
+      "name": "David Walsh (@davidwalshblog)",
+      "url": "https://davidwalsh.name"
+    }
+  ],
+  "homepage": "https://github.com/mozilla/wp-offline-content#readme"
 }
