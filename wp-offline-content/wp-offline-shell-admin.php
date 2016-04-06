@@ -9,7 +9,7 @@ class Offline_Shell_Admin {
   private $submitted = false;
 
   public function __construct() {
-    add_action('admin_menu', array($this, 'on_admin_menu'));
+    //add_action('admin_menu', array($this, 'on_admin_menu'));
     add_action('admin_notices', array($this, 'on_admin_notices'));
     add_action('after_switch_theme', array($this, 'on_switch_theme'));
     add_action('wp_ajax_offline_shell_files', array($this, 'get_files_ajax'));
@@ -31,6 +31,7 @@ class Offline_Shell_Admin {
   }
 
   public function process_options() {
+
     if(!isset($_POST['offline_shell_form_submitted'])) {
       return false;
     }
@@ -82,9 +83,8 @@ class Offline_Shell_Admin {
     }
   }
 
-  public function on_admin_menu() {
-    $plugin_page = add_options_page(__('Offline Shell', 'offline-shell'), __('Offline Shell', 'offline-shell'), 'manage_options', 'offline-shell-options', array($this, 'options'));
-    add_action('admin_head-'. $plugin_page, array($this, 'process_options'));
+  public function on_admin_menu($smp) {
+    add_action('admin_head-'.$smp, array($this, 'process_options'));
   }
 
   public function on_switch_theme() {
