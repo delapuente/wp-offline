@@ -34,7 +34,7 @@ describe('get()', function() {
       put: sinon.stub().returns(Promise.resolve())
     };
     clock = sinon.useFakeTimers();
-    importScripts('/base/wp-offline-content/lib/js/sw.js');
+    importScripts('/base/wp-offline-content/lib/js/content-sw.js');
     sinon.stub(wpOfflineContent, 'openCache').returns(Promise.resolve(fakeCache));
     sinon.stub(Response.prototype, 'clone').returnsThis();
   });
