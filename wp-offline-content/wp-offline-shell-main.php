@@ -20,6 +20,7 @@ class Offline_Shell_Main {
   public static function build_sw() {
     // Will contain items like 'style.css' => {filemtime() of style.css}
     $urls = array();
+    $enqueues = array();
 
     // Get files and validate they are of proper type
     $files = get_option('offline_shell_files');
@@ -44,6 +45,10 @@ class Offline_Shell_Main {
         $enqueues = array();
       }
     }
+
+    // Don't let json_encode return "null"
+    $urls = array_map(utf8_encode, $urls);
+    $enqueues = array_map(utf8_encode, $enqueues);
 
     // Template content into the JS file
     $contents = file_get_contents(dirname(__FILE__).'/lib/js/shell-sw.js');

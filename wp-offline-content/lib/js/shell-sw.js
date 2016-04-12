@@ -30,18 +30,20 @@
 
       url.search = '';
       url.fragment = '';
-      return url;
+
+      // Cast to string so this function always returns a string
+      return url + '';
     },
     // Detect if a URL should be cacheable and in the desired URL list
     shouldBeHandled: function(method, url) {
-      return method === 'GET' && (url in this.urls);
+      return method === 'GET' && ((url in this.urls) || (this.enqueues.indexOf(url) !== -1));
     },
     // Adds URLs to cache and localForage if the file has changed or needs to be added
     update: function() {
       var urls = Object.keys(this.urls);
 
       // Handle enqueue files first
-      if(this.enqueues && this.enqueues.length) {
+      if(this.enqueues.length) {
         if(this.enqueuesBackground) {
           // Will have no affect on service worker installation
           self.caches.open(this.cacheName).then(cache => {
@@ -56,6 +58,7 @@
           // Add to the rest of URLs to be cached
           // Will affect install success or failure
           urls.concat(this.enqueues);
+          this.log('[update] Adding enqueued URLs to the main cache list.');
         }
       }
 
@@ -65,6 +68,9 @@
 
         // ... get its hash from storage ...
         return this.storage.getItem(url).then(value => {
+
+          console.log('value is: ', value, '; hash is: ', hash);
+
           // ... and if nothing has changed, just move on to the next URL
           if(hash !== undefined && value === hash) {
             this.log('[update] Hash unchanged, doing nothing: ', url);
