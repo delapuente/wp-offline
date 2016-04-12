@@ -78,14 +78,33 @@ class WP_Offline_Content_Admin {
     }
 
     public function admin_menu() {
-        add_options_page(
-            __('Offline Content Options', 'offline-content'), __('Offline Content', 'offline-content'),
-            'manage_options', self::$options_page_id, array($this, 'create_admin_page')
-        );
+
+      add_menu_page(
+        __('Offline', 'offline-content'),
+        __('Offline', 'offline-content'),
+        'manage_options',
+        'offline-content',
+        array($this, 'create_content_admin_page')
+      );
+
+      add_submenu_page(
+        'offline-content',
+        __('Design', 'offline-content'),
+        __('Design', 'offline-content'),
+        'manage_options',
+        'offline-content-shell',
+        array($this, 'create_shell_admin_page')
+      );
+
     }
 
-    public function create_admin_page() {
+    public function create_content_admin_page() {
         include_once(plugin_dir_path(__FILE__) . 'lib/pages/admin.php');
+    }
+
+    public function create_shell_admin_page() {
+        Offline_Shell_Admin::process_options();
+        Offline_Shell_Admin::options();
     }
 
     public function network_timeout_input() {

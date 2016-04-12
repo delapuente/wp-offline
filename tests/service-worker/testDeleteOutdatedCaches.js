@@ -2,7 +2,7 @@ describe('deleteOutdatedCaches()', function() {
   'use strict';
 
   beforeEach(function() {
-    importScripts('/base/wp-offline-content/lib/js/sw.js');
+    importScripts('/base/wp-offline-content/lib/js/content-sw.js');
     sinon.stub(self.caches, 'delete').returns(Promise.resolve());
   });
 
