@@ -9,6 +9,10 @@ class Offline_Shell_DB {
     'offline_shell_enabled' => 0,
     // The "style.css" file is a standard WordPress file, so we can safely assume this exists
     'offline_shell_files' => array('style.css'),
+    // Enqueued script and style files
+    'offline_shell_enqueues' => array(),
+    // Load enqueued URLs in the background?
+    'offline_shell_enqueues_background' => 1,
     // Create an initial SW version
     'offline_shell_version' => self::VERSION,
     // Setting debug initially will help the user understand what the SW is doing via the console

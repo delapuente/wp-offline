@@ -61,6 +61,19 @@ class Offline_Shell_Admin {
       }
       update_option('offline_shell_files', $files);
     }
+
+    // Update enqueued files to cache
+    $enqueues = array();
+    if(isset($_POST['offline_shell_enqueues'])) {
+      foreach($_POST['offline_shell_enqueues'] as $url) {
+        $enqueues[] = urldecode($url);
+      }
+    }
+    update_option('offline_shell_enqueues', $enqueues);
+
+    // Update background load setting for enqueued files
+    update_option('offline_shell_enqueues_background', isset($_POST['offline_shell_enqueues_background']) ? intval($_POST['offline_shell_enqueues_background']) : 0);
+
     return true;
   }
 
@@ -83,6 +96,7 @@ class Offline_Shell_Admin {
     if(get_option('offline_shell_enabled')) {
       update_option('offline_shell_enabled', Offline_Shell_DB::$options['offline_shell_enabled']);
       update_option('offline_shell_files', Offline_Shell_DB::$options['offline_shell_files']);
+      update_option('offline_shell_enqueues', Offline_Shell_DB::$options['offline_shell_enqueues']);
       add_action('admin_notices', array($this, 'show_switch_theme_message'));
     }
   }
@@ -183,7 +197,7 @@ class Offline_Shell_Admin {
       </td>
     </tr>
     <tr>
-      <th scope="row"><label for="offline_shell_race_enabled"><?php _e('Enable cache-network race', 'offline-shell'); ?></label></th>
+      <th scope="row"><label for="offline_shell_race_enabled"><?php _e('Enable Cache-Network Race', 'offline-shell'); ?></label></th>
       <td>
         <input type="checkbox" name="offline_shell_race_enabled" id="offline_shell_race_enabled" value="1" <?php if(intval(get_option('offline_shell_race_enabled'))) echo 'checked'; ?> />
         <p class="description"><?php _e('Enable this option if you want the service worker to retrieve a response from the cache and the network at the same time, instead of only from the cache. This improves performance for users with fast connections, at the expense of an increased load on your server.', 'offline-shell'); ?></p>
@@ -203,6 +217,47 @@ class Offline_Shell_Admin {
       <p><?php _e('Loading theme files...', 'offline-shell'); ?></p>
     </div>
     <input type="hidden" name="offline_shell_files_loaded" id="offline_shell_files_loaded" value="0">
+
+    <h3><?php _e('Enqueued URLs', 'offline-shell'); ?></h3>
+    <p><?php _e('Many themes and plugins use WordPress\' "enqueue_script()" and "wp_enqueue_style()" functions to add styles to themes.  You may need some of these URLs to be cached for offline support.', 'offline-shell'); ?></p>
+    <div class="offline-shell-file-list">
+      <?php
+
+        $selected_enqueues = get_option('offline_shell_enqueues');
+        if(!is_array($selected_enqueues)) {
+          $selected_enqueues = array();
+        }
+        $enqueues = self::get_enqueues();
+        if(count($enqueues)) { ?>
+          <table class="files-list">
+            <?php foreach($enqueues as $key=>$url) { ?>
+            <tr>
+              <td style="width: 30px;">
+                <input type="checkbox" name="offline_shell_enqueues[]" id="offline_shell_enqueues['file_<?php echo $key; ?>']" value="<?php echo esc_attr(urlencode($url)); ?>" <?php if(in_array($url, $selected_enqueues)) { echo 'checked'; } ?> />
+              </td>
+              <td>
+                <label for="offline_shell_enqueues['file_<?php echo $key; ?>']">
+                  <strong><?php echo esc_html($key); ?></strong> <em class="offline-shell-enqueue-url"><?php echo esc_html($url); ?></em>
+                </label>
+              </td>
+            </tr>
+            <?php } ?>
+          </table>
+        <?php } else { ?>
+          <p><?php _e('No URLs have been enqueued.'); ?></p>
+        <?php } ?>
+    </div>
+
+    <table class="form-table">
+      <tr>
+        <th scope="row"><label for="offline_shell_enqueues_background"><?php _e('Load Enqueues in Background', 'offline-shell'); ?></label></th>
+        <td>
+          <input type="checkbox" name="offline_shell_enqueues_background" id="offline_shell_enqueues_background" value="1" <?php if(intval(get_option('offline_shell_enqueues_background'))) echo 'checked'; ?> />
+          <p class="description"><?php _e('Enable this option if you don\'t want the service worker to fail if an enqueued URL fails.  Since any theme, plugin, or core component can enqueue a URL, it\'s recommended to cache these URLs in the background.', 'offline-shell'); ?></p>
+        </td>
+      </tr>
+      <tr>
+    </table>
 
     <?php wp_nonce_field('offline-shell-admin'); ?>
     <?php submit_button(__('Save Changes', 'offline-shell'), 'primary'); ?>
@@ -238,7 +293,8 @@ class Offline_Shell_Admin {
 
   .offline-shell-file-size,
   .offline-shell-file-recommended,
-  .offline-shell-file-not-recommended {
+  .offline-shell-file-not-recommended,
+  .offline-shell-enqueue-url {
     font-size: smaller;
     color: #999;
     font-size: italic;
@@ -300,7 +356,6 @@ class Offline_Shell_Admin {
     // Enable the file control buttons
     jQuery('.offline-shell-buttons button').removeProp('disabled');
   });
-
 </script>
 
 <?php
@@ -387,10 +442,38 @@ class Offline_Shell_Admin {
         </tr>
         <?php } ?>
       </table>
-      <?php } else { ?><p><?php _e('No matching files found.', 'offline-shell'); ?></p><?php } ?>
+    <?php } else { ?>
+      <p><?php _e('No matching files found.', 'offline-shell'); ?></p>
     <?php } ?>
+  <?php } ?>
 
 <?php
+  }
+
+  // https://gist.github.com/darkwing/8ef9e8450be20fd349b8
+  function get_enqueued_assets(WP_Dependencies $assets) {
+    $output = array();
+    foreach($assets->queue as $handle) {
+      $output = array_merge(self::recurse_enqueued_dependencies($assets, $handle), $output);
+    }
+    return array_filter(array_unique($output));
+  }
+
+  function recurse_enqueued_dependencies(WP_Dependencies $assets, $handle) {
+  	$output = array();
+  	$output[$handle] = preg_replace('|^/wp-includes/|', includes_url(), $assets->registered[ $handle ]->src);
+  	foreach($assets->registered[ $handle ]->deps as $dep) {
+  		$output = array_merge(self::recurse_enqueued_dependencies($assets, $dep), $output);
+  	}
+  	return array_unique($output);
+  }
+
+  function get_enqueues() {
+    global $wp_scripts, $wp_styles;
+    $cache = array();
+    $cache += self::get_enqueued_assets($wp_scripts);
+    $cache += self::get_enqueued_assets($wp_styles);
+    return $cache;
   }
 
 }

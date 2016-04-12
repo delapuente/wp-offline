@@ -9,6 +9,10 @@
     // A { url: hash } object which will be used to populate cache
     // A changed url object will ensure the SW is downloaded when URLs change
     urls: $urls,
+    // A list of enqueued URLs which should be cached, either in the background or with asset URLs
+    enqueues: $enqueues,
+    // Setting for when to load enqueued URLs - 1 is background, 0 is with other URLs
+    enqueuesBackground: $enqueuesBackground,
     // Allowed to use console functions?
     debug: $debug,
     // Race cache-network or only cache?
@@ -34,14 +38,35 @@
     },
     // Adds URLs to cache and localForage if the file has changed or needs to be added
     update: function() {
+      var urls = Object.keys(this.urls);
+
+      // Handle enqueue files first
+      if(this.enqueues && this.enqueues.length) {
+        if(this.enqueuesBackground) {
+          // Will have no affect on service worker installation
+          self.caches.open(this.cacheName).then(cache => {
+            this.enqueues.forEach(url => {
+              cache.add(url).then(() => {
+                this.log('[update] Caching enqueued URL in the background: ', url);
+              });
+            });
+          });
+        }
+        else {
+          // Add to the rest of URLs to be cached
+          // Will affect install success or failure
+          urls.concat(this.enqueues);
+        }
+      }
+
       // For every URL (file) the user wants cached...
-      return Promise.all(Object.keys(this.urls).map(url => {
+      return Promise.all(urls.map(url => {
         var hash = this.urls[url];
 
         // ... get its hash from storage ...
         return this.storage.getItem(url).then(value => {
           // ... and if nothing has changed, just move on to the next URL
-          if(value === hash) {
+          if(hash !== undefined && value === hash) {
             this.log('[update] Hash unchanged, doing nothing: ', url);
             return Promise.resolve();
           }
@@ -51,7 +76,9 @@
           return self.caches.open(this.cacheName).then(cache => {
             return cache.add(url).then(() => {
               // ... and once it's successful add its hash to storage
-              return this.storage.setItem(url, hash);
+              if(hash !== undefined) {
+                return this.storage.setItem(url, hash);
+              }
             });
           });
 
@@ -67,7 +94,7 @@
       return caches.open(this.cacheName).then(cache =>  {
         return cache.keys().then(keys =>  {
           return Promise.all(keys.map(key => {
-            if(!(key.url in this.urls)) {
+            if(!(key.url in this.urls) && (this.enqueues.indexOf(key.url) === -1)) {
               return this.removeOldUrl(cache, key);
             }
             return Promise.resolve();
@@ -88,7 +115,8 @@
     // Install step that kicks off adding/updating URLs in cache and storage
     onInstall: function(event) {
       this.log('[install] Event triggered');
-      this.log('[install] Initial cache list is: ', Object.keys(this.urls));
+      this.log('[install] Initial theme cache list is: ', Object.keys(this.urls));
+      this.log('[install] Initial enqueue cache list is: ', this.enqueues);
 
       event.waitUntil(Promise.all([self.skipWaiting(), this.update()]));
     },
