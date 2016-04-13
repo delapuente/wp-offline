@@ -52,12 +52,14 @@ class Offline_Shell_Main {
 
     // Template content into the JS file
     $contents = file_get_contents(dirname(__FILE__).'/lib/js/shell-sw.js');
-    $contents = str_replace('$name', self::$cache_name, $contents);
-    $contents = str_replace('$urls', json_encode($urls), $contents);
-    $contents = str_replace('$debug', intval(get_option('offline_shell_debug')), $contents);
-    $contents = str_replace('$raceEnabled', intval(get_option('offline_shell_race_enabled')), $contents);
-    $contents = str_replace('$enqueuesBackground', intval(get_option('offline_shell_enqueues_background')), $contents);
-    $contents = str_replace('$enqueues', json_encode($enqueues), $contents);
+    $contents = str_replace('$$contents$$', json_encode(array(
+      'storageKey' => self::$cache_name,
+      'urls' => $urls,
+      'debug' => intval(get_option('offline_shell_debug')),
+      'raceEnabled' => intval(get_option('offline_shell_race_enabled')),
+      'enqueuesBackground' => intval(get_option('offline_shell_enqueues_background')),
+      'enqueues' => $enqueues
+    )), $contents);
 
     return $contents;
   }

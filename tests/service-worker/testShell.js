@@ -5,15 +5,17 @@ describe('tests', function() {
   var fakeEvent;
 
   beforeEach(function(done) {
-    // Set globals to replace the '$' vars in the serviceworker file
-    self.$urls = {
-      'http://localhost:9876/socket.io/socket.io.js': '1111',
-      'http://localhost:9876/karma.js': '2222'
+    // Set globals to replace the $$contents$$ var in the serviceworker file
+    self.$$contents$$ = {
+      urls: {
+        'http://localhost:9876/socket.io/socket.io.js': '1111',
+        'http://localhost:9876/karma.js': '2222'
+      },
+      debug: 1,
+      raceEnabled: 0,
+      enqueues: [],
+      enqueuesBackground: 1
     };
-    self.$debug = 1;
-    self.$raceEnabled = 0;
-    self.enqueues = [];
-    self.enqueuesBackground = 1;
 
     importScripts('/base/wp-offline-content/lib/js/shell-sw.js');
 
