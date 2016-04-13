@@ -12,6 +12,8 @@ describe('tests', function() {
     };
     self.$debug = 1;
     self.$raceEnabled = 0;
+    self.enqueues = [];
+    self.enqueuesBackground = 1;
 
     importScripts('/base/wp-offline-content/lib/js/shell-sw.js');
 
