@@ -208,9 +208,9 @@ class Offline_Shell_Admin {
     <h2><?php _e('Theme Files to Cache', 'offline-shell'); ?> (<code><?php echo get_template(); ?></code>)</h2>
     <p class="offline-shell-buttons">
       <?php _e('Select theme assets (typically JavaScript, CSS, fonts, and image files) that are used on a majority of pages.', 'offline-shell'); ?>
-      <button type="button" class="button button-primary offline-shell-toggle-all" disabled><?php _e('Select All Files', 'offline-shell'); ?></button>
-      <button type="button" class="button button-primary offline-shell-clear-all"  disabled><?php _e('Clear All Files', 'offline-shell'); ?></button>
-      <button type="button" class="button button-primary offline-shell-suggest-file" disabled data-suggested-text="<?php echo esc_attr__('Files Suggested: ', 'offline-shell'); ?>"><?php _e('Suggest Files', 'offline-shell'); ?> <span>(<?php _e('beta'); ?>)</span></button>
+      <button type="button" class="button button-primary offline-shell-toggle-all" data-file-list="offline-shell-file-list" disabled><?php _e('Select All Files', 'offline-shell'); ?></button>
+      <button type="button" class="button button-primary offline-shell-clear-all" data-file-list="offline-shell-file-list"  disabled><?php _e('Clear All Files', 'offline-shell'); ?></button>
+      <button type="button" class="button button-primary offline-shell-suggest-file" data-file-list="offline-shell-file-list" disabled data-suggested-text="<?php echo esc_attr__('Files Suggested: ', 'offline-shell'); ?>"><?php _e('Suggest Files', 'offline-shell'); ?> <span>(<?php _e('beta'); ?>)</span></button>
     </p>
 
     <div class="offline-shell-file-list" id="offline-shell-file-list">
@@ -218,9 +218,13 @@ class Offline_Shell_Admin {
     </div>
     <input type="hidden" name="offline_shell_files_loaded" id="offline_shell_files_loaded" value="0">
 
-    <h3><?php _e('Enqueued URLs', 'offline-shell'); ?></h3>
-    <p><?php _e('Many themes and plugins use WordPress\' "enqueue_script()" and "wp_enqueue_style()" functions to add styles to themes.  You may need some of these URLs to be cached for offline support.', 'offline-shell'); ?></p>
-    <div class="offline-shell-file-list">
+    <h2><?php _e('Enqueued URLs', 'offline-shell'); ?></h2>
+    <p class="offline-shell-buttons">
+      <p><?php _e('Many themes and plugins use WordPress\' "enqueue_script()" and "wp_enqueue_style()" functions to add styles to themes.  You may need some of these URLs to be cached for offline support.', 'offline-shell'); ?></p>
+      <button type="button" data-file-list="offline-shell-enqueue-list" class="button button-primary offline-shell-toggle-all"><?php _e('Select All Files', 'offline-shell'); ?></button>
+      <button type="button" data-file-list="offline-shell-enqueue-list" class="button button-primary offline-shell-clear-all"><?php _e('Clear All Files', 'offline-shell'); ?></button>
+    </p>
+    <div class="offline-shell-file-list" id="offline-shell-enqueue-list">
       <?php
 
         $selected_enqueues = get_option('offline_shell_enqueues');
@@ -333,10 +337,10 @@ class Offline_Shell_Admin {
         .prop('disabled', 'disabled');
     })
     .on('click', '.offline-shell-toggle-all', function() {
-      jQuery('.files-list input[type="checkbox"]').prop('checked', 'checked');
+      jQuery('#' + jQuery(this).data('file-list') + ' input[type="checkbox"]').prop('checked', 'checked');
     })
     .on('click', '.offline-shell-clear-all', function() {
-      jQuery('.files-list input[type="checkbox"]').prop('checked', '');
+      jQuery('#' + jQuery(this).data('file-list') + ' input[type="checkbox"]').prop('checked', '');
     })
     .on('click', '.offline-shell-file-all', function(e) {
       e.preventDefault();
