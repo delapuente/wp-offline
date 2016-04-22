@@ -80,8 +80,8 @@ class Offline_Shell_Admin {
 
 	public function on_switch_theme() {
 		if ( get_option( 'offline_shell_enabled' ) ) {
-			update_option( 'offline_shell_enabled', WP_Offline_Content_Options::$DEFAULTS['offline_shell_enabled'] );
-			update_option( 'offline_shell_files', WP_Offline_Content_Options::$DEFAULTS['offline_shell_files'] );
+			update_option( 'offline_shell_enabled', WP_Offline_Content_Options::$defaults['offline_shell_enabled'] );
+			update_option( 'offline_shell_files', WP_Offline_Content_Options::$defaults['offline_shell_files'] );
 			add_action( 'admin_notices', array( $this, 'show_switch_theme_message' ) );
 		}
 	}
