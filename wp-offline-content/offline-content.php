@@ -8,6 +8,8 @@
  * Author URI: https://www.mozilla.org/
  * License: GPLv2 or later
  * Text Domain: offline-content
+ *
+ * @package OfflineContent
  */
 
 load_plugin_textdomain( 'offline-content', false, dirname( plugin_basename( __FILE__ ) ) . '/lang' );

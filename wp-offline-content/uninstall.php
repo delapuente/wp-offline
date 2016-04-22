@@ -1,4 +1,10 @@
 <?php
+/**
+ * Performs cleaning operations triggered when uninstalling the plugin.
+ *
+ * @package OfflineContent
+ */
+
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit();
 }
