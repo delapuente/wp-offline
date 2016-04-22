@@ -3,6 +3,15 @@
   <description>A slightly modified version of WordPress guidelines.</description>
   <exclude-pattern>*/vendor/*</exclude-pattern>
   <exclude-pattern>*/class-wp-offline-shell-admin.php</exclude-pattern>
-  <rule ref="WordPress">
+  <rule ref="WordPress" />
+  <rule ref="WordPress.PHP.DiscouragedFunctions">
+    <properties>
+      <property name="error" value="false"/>
+    </properties>
+  </rule>
+  <rule ref="WordPress.VIP.RestrictedFunctions">
+    <properties>
+      <property name="exclude" value="file_get_contents"/>
+    </properties>
   </rule>
 </ruleset>

@@ -1,12 +1,36 @@
 <?php
+/**
+ * Contains the main class of the plugin.
+ *
+ * @package OfflineContent
+ */
 
+/** Required to manipulate plugin options. */
 require_once( plugin_dir_path( __FILE__ ) . 'class-wp-offline-content-options.php' );
 
+/**
+ * Represents the plugin and holds the main logic
+ */
 class WP_Offline_Content_Plugin {
+	/**
+	 * The singleton instance holding the plugin.
+	 *
+	 * @var WP_Offline_Content_Plugin
+	 */
 	private static $instance;
 
+	/**
+	 * Name for the JavaScript offline cache storing theme assets.
+	 *
+	 * @var string
+	 */
 	public static $cache_name = '__offline-shell';
 
+	/**
+	 * Sets the plugin instance up and return the shared instance.
+	 *
+	 * @returns WP_OfflineContent_Plugin the shared plugin instance.
+	 */
 	public static function init() {
 		if ( ! self::$instance ) {
 			self::$instance = new self();
@@ -14,8 +38,14 @@ class WP_Offline_Content_Plugin {
 		return self::$instance;
 	}
 
+	/**
+	 * Holds the options instance to manipulate plugin's options.
+	 *
+	 * @var WP_Offline_Content_Options
+	 */
 	private $options;
 
+	/** Hooks plugin setup into WordPress actions. */
 	private function __construct() {
 		$plugin_main_file = plugin_dir_path( __FILE__ ) . 'wp-offline-content.php';
 		$this->options = WP_Offline_Content_Options::get_options();
@@ -25,23 +55,34 @@ class WP_Offline_Content_Plugin {
 		register_deactivation_hook( $plugin_main_file, array( $this, 'deactivate' ) );
 	}
 
+	/** Sets the relevant plugin URLs. */
 	private function set_urls() {
 		$this->sw_scope = home_url( '/' );
 	}
 
+	/**
+	 * Starts serving the dynamically generated service worker in charge of caching
+	 * content and shell.
+	 */
 	private function setup_sw() {
 		Mozilla\WP_SW_Manager::get_manager()->sw()->add_content( array( $this, 'render_sw' ) );
 		// TODO: Refactor this!!
 		Mozilla\WP_SW_Manager::get_manager()->sw()->add_content( array( $this, 'write_sw' ) );
 	}
 
+	/**
+	 * Callback to trigger when the plugin is activated. It sets the default
+	 * plugin options.
+	 */
 	public function activate() {
 		$this->options->set_defaults();
 	}
 
+	/** Callback to trigger when the plugin is disabled. */
 	public static function deactivate() {
 	}
 
+	/** Writes the portion of the service worker that caches the content. */
 	public function render_sw() {
 		$sw_scope = $this->sw_scope;
 		$this->render(plugin_dir_path( __FILE__ ) . 'lib/js/content-sw.js', array(
@@ -52,11 +93,17 @@ class WP_Offline_Content_Plugin {
 		));
 	}
 
-	// TODO: Reconcile with render.
+	/**
+	 * Writes the portion of the service worker that caches the theme.
+	 * TODO: Reconcile with render.
+	 */
 	public function write_sw() {
 		echo self::build_sw(); // WPCS: XSS OK.
 	}
 
+	/**
+	 * Actually writes the portion of the service worker that caches the theme.
+	 */
 	public static function build_sw() {
 		// Will contain items like 'style.css' => {filemtime() of style.css} .
 		$urls = array();
@@ -87,6 +134,17 @@ class WP_Offline_Content_Plugin {
 		return $contents;
 	}
 
+	/**
+	 * Interpolate a template with the values from a map.
+	 *
+	 * The function will compute a checksum of contents and interpolated
+	 * values and will try to replace a special $version placeholder with
+	 * this checksum.
+	 *
+	 * @param string $path path to the template.
+	 * @param array  $replacements map between placeholder strings to be found
+	 *  in the template and the replacements for them.
+	 */
 	private function render( $path, $replacements ) {
 		$contents = file_get_contents( $path );
 		$incremental_hash = hash_init( 'md5' );
@@ -101,17 +159,39 @@ class WP_Offline_Content_Plugin {
 		echo $contents; // WPCS: XSS OK.
 	}
 
+	/**
+	 * Obtains the array of URLs to be precached.
+	 *
+	 * @returns string[] list of URL to precache.
+	 */
 	private function get_precache_list() {
 		$precache_options = $this->options->get( 'offline_precache' );
 		$precache_list = array();
 		if ( $precache_options['pages'] ) {
-			foreach ( get_pages() as $page ) {
+			foreach ( $this->get_pages() as $page ) {
 				$precache_list[ get_page_link( $page ) ] = $page->post_modified;
 			}
 		}
 		return $precache_list;
 	}
 
+	/**
+	 * Returns the list of published pages.
+	 *
+	 * @returns WP_Post[] list of published pages.
+	 */
+	private function get_pages() {
+		$page_query = new WP_Query( array( 'post_type' => 'page', 'post_status' => 'publish' ) );
+		return $page_query->get_posts();
+	}
+
+	/**
+	 * Obtains the array of URL prefixes to exclude from handling in the
+	 * service worker. An URL is excluded if some of this items is a prefix
+	 * of the URL.
+	 *
+	 * @returns string[] list of URL prefixes.
+	 */
 	private function get_excluded_paths() {
 		return array( admin_url(), content_url(), includes_url() );
 	}
