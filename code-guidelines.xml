@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<ruleset name="PWA WorsPress PLugin Suite">
+  <description>A slightly modified version of WordPress guidelines.</description>
+  <exclude-pattern>*/vendor/*</exclude-pattern>
+  <exclude-pattern>*/class-wp-offline-shell-admin.php</exclude-pattern>
+  <rule ref="WordPress">
+  </rule>
+</ruleset>
