@@ -1,9 +1,14 @@
 <?php
 /**
- * Includes the class controlling administration menu and configuration
- * sections.
+ * Contains the class for configuring the plugin
+ *
+ * The class WP_Offline_Content_Admin adds the menu entry for configuring
+ * the plugin and builds the UI for the administrative pages.
+ *
+ * @package OfflineContent
  */
 
+/** Requiring access to plugin options. */
 require_once( plugin_dir_path( __FILE__ ) . 'class-wp-offline-content-options.php' );
 
 /**
@@ -13,13 +18,28 @@ require_once( plugin_dir_path( __FILE__ ) . 'class-wp-offline-content-options.ph
  * Based on: https://codex.wordpress.org/Creating_Options_Pages#Example_.232
  */
 class WP_Offline_Content_Admin {
-	/** Singleton for the class */
+	/**
+	 * Singleton for the class.
+	 *
+	 * @var WP_Offline_Content_Admin
+	 */
 	private static $instance;
 
+	/**
+	 * Unique id to refer to the options page inside WordPress.
+	 *
+	 * @var string
+	 */
 	public static $options_page_id = 'offline-options';
 
+	/**
+	 * Unique used by the options WordPress API to group the plugin setting.
+	 *
+	 * @var string
+	 */
 	public static $options_group = 'offline-settings-group';
 
+	/** Gets the singleton instance. */
 	public static function init() {
 		if ( ! self::$instance ) {
 			self::$instance = new self();
@@ -27,14 +47,21 @@ class WP_Offline_Content_Admin {
 		return self::$instance;
 	}
 
+	/**
+	 * Holds the options manager.
+	 *
+	 * @var WP_Offline_Content_Options
+	 */
 	private $options;
 
+	/** Hooks UI setup into WordPress actions */
 	private function __construct() {
 		$this->options = WP_Offline_Content_Options::get_options();
 		add_action( 'admin_menu', array( $this, 'admin_menu' ) );
 		add_action( 'admin_init', array( $this, 'admin_init' ) );
 	}
 
+	/** Builds the UI for the options page. */
 	public function admin_init() {
 		$group = self::$options_group;
 		register_setting( $group, 'offline_network_timeout', array( $this, 'sanitize_network_timeout' ) );
@@ -87,6 +114,7 @@ class WP_Offline_Content_Admin {
 		);
 	}
 
+	/** Builds the menu entry in the WordPress Dashboard. */
 	public function admin_menu() {
 
 		add_menu_page(
@@ -108,15 +136,18 @@ class WP_Offline_Content_Admin {
 
 	}
 
+	/** Adds the actual HTML of the options page. */
 	public function create_content_admin_page() {
 		include_once( plugin_dir_path( __FILE__ ) . 'lib/pages/admin.php' );
 	}
 
+	/** Adds the actual HTML of the shell options page. */
 	public function create_shell_admin_page() {
 		Offline_Shell_Admin::process_options();
 		Offline_Shell_Admin::options();
 	}
 
+	/** Builds the input for entering network time out. */
 	public function network_timeout_input() {
 		$network_timeout = $this->options->get( 'offline_network_timeout' ) / 1000;
 		?>
@@ -126,6 +157,7 @@ class WP_Offline_Content_Admin {
 		<?php
 	}
 
+	/** Builds the widget to enable or disable debug messages. */
 	public function debug_sw_input() {
 		$debug_sw = $this->options->get( 'offline_debug_sw' );
 		?>
@@ -137,6 +169,7 @@ class WP_Offline_Content_Admin {
 		<?php
 	}
 
+	/** Builds the widget to select which precaching options are enabled. */
 	public function precache_input() {
 		$precache = $this->options->get( 'offline_precache' );
 		?>
@@ -148,6 +181,11 @@ class WP_Offline_Content_Admin {
 		<?php
 	}
 
+	/**
+	 * Converts network timeout to milliseconds and check its validity.
+	 *
+	 * @param string $value network timeout in seconds, sent from HTML.
+	 */
 	public function sanitize_network_timeout( $value ) {
 		$value = $value * 1000; // Convert to milliseconds.
 		if ( isset( $value ) && $value < 1000 ) {
@@ -161,22 +199,34 @@ class WP_Offline_Content_Admin {
 		return $value;
 	}
 
+	/**
+	 * Converts the debug flag into a boolean.
+	 *
+	 * @param string|null $value debug flag, sent from HTML.
+	 */
 	public function sanitize_debug_sw( $value ) {
 		return isset( $value );
 	}
 
+	/**
+	 * Converts precaching options into a table of boolean flags.
+	 *
+	 * @param string[] $value table of set entries, sent from HTML.
+	 */
 	public function sanitize_precache( $value ) {
 		$sanitized = array();
 		$sanitized['pages'] = isset( $value['pages'] );
 		return $sanitized;
 	}
 
+	/** Prints sensible information about the serving policy section. */
 	public function print_serving_policy_info() {
 		?>
 		<p><?php esc_html_e( 'Offline plugin prefers to serve fresh living content from the Internet but it will serve cached content in case network is not available or not reliable.', 'offline-content' );?></p>
 		<?php
 	}
 
+	/** Prints sensible information about the precache section. */
 	public function print_precache_info() {
 		?>
 		<p><?php esc_html_e( 'Precache options allows you to customize which content will be available even if the user never visit it before.', 'offline-content' );?></p>

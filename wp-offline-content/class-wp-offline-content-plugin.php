@@ -98,7 +98,7 @@ class WP_Offline_Content_Plugin {
 		}
 		$version = json_encode( hash_final( $incremental_hash ) );
 		$contents = str_replace( '$version', $version, $contents );
-        echo $contents; // WPCS: XSS OK.
+		echo $contents; // WPCS: XSS OK.
 	}
 
 	private function get_precache_list() {
