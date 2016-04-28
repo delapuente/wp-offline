@@ -20,8 +20,6 @@ require_once( plugin_dir_path( __FILE__ ) . 'class-wp-offline-content-plugin.php
 if ( is_admin() ) {
 	require_once( plugin_dir_path( __FILE__ ) . 'class-wp-offline-content-admin.php' );
 	WP_Offline_Content_Admin::init();
-	require_once( plugin_dir_path( __FILE__ ) . 'class-wp-offline-shell-admin.php' );
-	Offline_Shell_Admin::init();
 }
 WP_Offline_Content_Plugin::init();
 ?>

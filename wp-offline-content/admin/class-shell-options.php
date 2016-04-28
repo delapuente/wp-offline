@@ -1,22 +1,54 @@
 <?php
+/**
+ * Contains the class for setting offline shell options page up
+ *
+ * The class WP_Offline_Content_Shell_Options builds and manages the UI for
+ * configuring offline shell options.
+ *
+ * @package OfflineContent
+ */
 
-require_once( plugin_dir_path( __FILE__ ) . 'class-wp-offline-content-options.php' );
+/** Requiring access to plugin options. */
+require_once( plugin_dir_path( __FILE__ ) . '../class-wp-offline-content-options.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'class-wp-offline-shell-recommender.php' );
 
-class Offline_Shell_Admin {
+/**
+ * Builds and manages the UI for configuring offline shell options.
+ *
+ * Based on: https://codex.wordpress.org/Creating_Options_Pages#Example_.232
+ */
+class WP_Offline_Content_Shell_Options {
+	/**
+	 * Singleton for the class.
+	 *
+	 * @var WP_Offline_Content_Shell_Options
+	 */
 	private static $instance;
 
-	public function __construct() {
+	/** Gets the singleton instance. */
+	public static function get_page() {
+		if ( ! self::$instance ) {
+			self::$instance = new self();
+		}
+		return self::$instance;
+	}
+
+	/** Initializes the instance. */
+	private function __construct() {
+		$this->options = WP_Offline_Content_Options::get_options();
+	}
+
+	/** Hooks UI setup into WordPress actions */
+	public function init() {
 		add_action( 'admin_notices', array( $this, 'on_admin_notices' ) );
 		add_action( 'after_switch_theme', array( $this, 'on_switch_theme' ) );
 		add_action( 'wp_ajax_offline_shell_files', array( $this, 'get_files_ajax' ) );
 	}
 
-	public static function init() {
-		if ( ! self::$instance ) {
-			self::$instance = new self();
-		}
-		return self::$instance;
+	/** Renders the options page UI. */
+	public function render() {
+		self::process_options();
+		self::options();
 	}
 
 	public function get_files_ajax() {
