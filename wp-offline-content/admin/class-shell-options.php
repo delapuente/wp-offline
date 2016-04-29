@@ -25,6 +25,13 @@ class WP_Offline_Content_Shell_Options {
 	 */
 	private static $instance;
 
+	/**
+	 * Unique id to refer to the options page inside WordPress.
+	 *
+	 * @var string
+	 */
+	public static $options_page_id = 'shell-options';
+
 	/** Gets the singleton instance. */
 	public static function get_page() {
 		if ( ! self::$instance ) {
@@ -39,10 +46,21 @@ class WP_Offline_Content_Shell_Options {
 	}
 
 	/** Hooks UI setup into WordPress actions */
-	public function init() {
+	public function init( $parent_id ) {
+		add_action( 'offline_page_' . self::$options_page_id, array( $this, 'enqueue_assets' ) );
 		add_action( 'admin_notices', array( $this, 'on_admin_notices' ) );
 		add_action( 'after_switch_theme', array( $this, 'on_switch_theme' ) );
 		add_action( 'wp_ajax_offline_shell_files', array( $this, 'get_files_ajax' ) );
+	}
+
+	/** Adds resources used by this page. */
+	public function enqueue_assets() {
+		wp_enqueue_style( 'options-page-style', plugins_url( '../lib/css/shell-options.css', __FILE__ ) );
+		wp_enqueue_script(
+			'options-page-script',
+			plugins_url( '../lib/js/shell-options.js', __FILE__ ),
+			array( 'jquery' )
+		);
 	}
 
 	/** Renders the options page UI. */
@@ -240,99 +258,6 @@ class WP_Offline_Content_Shell_Options {
 	</form>
 
 </div>
-
-<style>
-	.offline-shell-suggested {
-	background: lightgreen;
-	}
-
-	.offline-shell-suggest-file,
-	.offline-shell-toggle-all,
-	.offline-shell-clear-all {
-	float: right;
-	margin-left: 10px !important;
-	}
-
-	.offline-shell-file-list {
-	max-height: 300px;
-	background: #fefefe;
-	border: 1px solid #ccc;
-	padding: 10px;
-	overflow-y: auto;
-	}
-
-	.offline-shell-suggest-file span {
-	font-size: smaller;
-	color: #fc0;
-	font-weight: bold;
-	}
-
-	.offline-shell-file-size,
-	.offline-shell-file-recommended,
-	.offline-shell-file-not-recommended {
-	font-size: smaller;
-	color: #999;
-	font-size: italic;
-	display: inline-block;
-	margin-left: 20px;
-	}
-
-	.offline-shell-file-recommended {
-	color: green;
-	}
-
-	.offline-shell-file-all {
-	font-size: 14px;
-	display: inline-block;
-	margin-left: 20px;
-	}
-
-</style>
-
-<script type="text/javascript">
-
-	// Create event listeners for the file listing helpers
-	jQuery(document.body)
-	.on('click', '.offline-shell-suggest-file', function() {
-	  var $this = jQuery(this);
-	  var suggestedCounter = 0;
-
-	  // Suggest main level CSS and JS files
-	  var $recommended = jQuery('.files-list input[type="checkbox"].recommended:not(:checked)')
-						  .prop('checked', 'checked')
-						  .closest('tr').addClass('offline-shell-suggested');
-
-	  // Update sugget button now that the process is done
-	  $this
-		.text($this.data('suggested-text') + ' ' + $recommended.length)
-		.prop('disabled', 'disabled');
-	})
-	.on('click', '.offline-shell-toggle-all', function() {
-	  jQuery('.files-list input[type="checkbox"]').prop('checked', 'checked');
-	})
-	.on('click', '.offline-shell-clear-all', function() {
-	  jQuery('.files-list input[type="checkbox"]').prop('checked', '');
-	})
-	.on('click', '.offline-shell-file-all', function(e) {
-	  e.preventDefault();
-	  jQuery(this.parentNode).next('.files-list').find('input[type=checkbox]').prop('checked', 'checked');
-	});
-
-	// Load the file listing async so as to not brick the page on huge themes
-	// ajaxurl is a WordPress global JS var
-	jQuery.post(ajaxurl, {
-	action: 'offline_shell_files',
-	data: 'files'
-	}).done(function(response) {
-	// Place the file listing
-	jQuery('#offline-shell-file-list').html(response);
-	// Notify admin that the files have been loaded and placed
-	jQuery('#offline_shell_files_loaded').val(1);
-	// Enable the file control buttons
-	jQuery('.offline-shell-buttons button').removeProp('disabled');
-	});
-
-</script>
 
 <?php
 	}

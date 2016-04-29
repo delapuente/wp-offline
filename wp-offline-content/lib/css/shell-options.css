@@ -1,0 +1,44 @@
+.offline-shell-suggested {
+    background: lightgreen;
+}
+
+.offline-shell-suggest-file,
+.offline-shell-toggle-all,
+.offline-shell-clear-all {
+    float: right;
+    margin-left: 10px !important;
+}
+
+.offline-shell-file-list {
+    max-height: 300px;
+    background: #fefefe;
+    border: 1px solid #ccc;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+.offline-shell-suggest-file span {
+    font-size: smaller;
+    color: #fc0;
+    font-weight: bold;
+}
+
+.offline-shell-file-size,
+.offline-shell-file-recommended,
+.offline-shell-file-not-recommended {
+    font-size: smaller;
+    color: #999;
+    font-size: italic;
+    display: inline-block;
+    margin-left: 20px;
+}
+
+.offline-shell-file-recommended {
+    color: green;
+}
+
+.offline-shell-file-all {
+    font-size: 14px;
+    display: inline-block;
+    margin-left: 20px;
+}

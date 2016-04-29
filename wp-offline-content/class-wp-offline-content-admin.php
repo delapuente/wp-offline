@@ -32,9 +32,11 @@ class WP_Offline_Content_Admin {
 
 	/** Hooks UI setup into WordPress actions */
 	private function __construct() {
-        WP_Offline_Content_Content_Options::get_page()->init();
-        WP_Offline_Content_Shell_Options::get_page()->init();
 		add_action( 'admin_menu', array( $this, 'admin_menu' ) );
+		WP_Offline_Content_Content_Options::get_page()->init();
+		WP_Offline_Content_Shell_Options::get_page()->init(
+			WP_Offline_Content_Content_Options::$options_page_id
+		);
 	}
 
 	/** Builds the menu entry in the WordPress Dashboard. */
@@ -44,16 +46,16 @@ class WP_Offline_Content_Admin {
 			__( 'Offline', 'offline-content' ),
 			__( 'Offline', 'offline-content' ),
 			'manage_options',
-			'offline-content',
+			WP_Offline_Content_Content_Options::$options_page_id,
 			array( $this, 'create_content_options_page' )
 		);
 
 		add_submenu_page(
-			'offline-content',
+			WP_Offline_Content_Content_Options::$options_page_id,
 			__( 'Design', 'offline-content' ),
 			__( 'Design', 'offline-content' ),
 			'manage_options',
-			'offline-content-shell',
+			WP_Offline_Content_Shell_Options::$options_page_id,
 			array( $this, 'create_shell_options_page' )
 		);
 

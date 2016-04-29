@@ -29,7 +29,7 @@ class WP_Offline_Content_Content_Options {
 	 *
 	 * @var string
 	 */
-	public static $options_page_id = 'offline-options';
+	public static $options_page_id = 'content-options';
 
 	/**
 	 * Unique used by the options WordPress API to group the plugin setting.
