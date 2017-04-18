@@ -20,4 +20,7 @@ if (is_admin()) {
     WP_Offline_Content_Admin::init();
 }
 WP_Offline_Content_Plugin::init();
+
+include_once(plugin_dir_path(__FILE__) . 'wp-offline-shell.php');
+
 ?>
